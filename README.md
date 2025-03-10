@@ -2,12 +2,15 @@
 by git push --force
 
 ## Team Members
-[Steven Arbo] - [stevenarbo3]
-[Chris Pickreign] - [ChrisPickreign]
-[Christian Noble Shriver] - [cnobleshriver]
+- Steven Arbo - [stevenarbo3](https://github.com/stevenarbo3)
+- Christian Noble Shriver - [cnobleshriver](https://github.com/cnobleshriver)
+- Chris Pickreign - [ChrisPickreign](https://github.com/ChrisPickreign)
 
 ## Overview
-DeFiGuard is a monitoring dashboard aimed to help lending protocols and their users understand the overall health of the system. Metrics are broken up into two gategories: asset-specific and general protocol health. 
+DeFiGuard is a real-time monitoring dashboard for decentralized finance (DeFi) lending protocols. It provides comprehensive insights into protocol health and risk metrics through two main categories:
+
+1. Asset-Specific Metrics: Detailed analytics for individual assets.
+2. Protocol Health Indicators: System-wide metrics.
 
 ## Setup and Running the Project
 
