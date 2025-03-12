@@ -19,8 +19,8 @@ export default function Header() {
             />
             <nav className="flex list-none">
                 <li><Link className={navButton} href="/">Overview</Link></li>
-                <li><Link className={navButton} href="/AssetsPage">Assets</Link></li>
-                <li><Link className={navButton} href="/Wallets">Wallets</Link></li>
+                <li><Link className={navButton} href="/assets">Assets</Link></li>
+                <li><Link className={navButton} href="/wallets">Wallets</Link></li>
             </nav>
         </header>
     );
