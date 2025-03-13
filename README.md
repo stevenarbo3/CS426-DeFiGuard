@@ -21,7 +21,7 @@ DeFiGuard is a real-time monitoring dashboard for decentralized finance (DeFi) l
 ### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/CS426-DeFiGuard.git
+git clone https://github.com/stevenarbo3/CS426-DeFiGuard.git
 cd CS426-DeFiGuard
 ```
 
