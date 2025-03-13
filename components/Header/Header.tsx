@@ -5,7 +5,7 @@ const navButton = "text-gray-200 hover:text-white px-4 py-2 rounded-md";
 
 export default function Header() {
     return (
-        <header className="flex items-center justify-center gap-5 mb-5 bg-gray-900 p-4 shadow-md">
+        <header className="flex items-center justify-center gap-5 bg-gray-900 p-4 shadow-md">
             <span className="text-2xl font-bold text-gray-100">
                 DeFiGuard
             </span>
