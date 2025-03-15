@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Position, columns } from "./columns";
 import { DataTable } from "./data-table";
+import '../../styles/globals.css';
 
 export const metadata: Metadata = {
   title: "Wallets | DeFiGuard",

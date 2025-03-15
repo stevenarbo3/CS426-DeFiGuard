@@ -2,10 +2,11 @@ import { Metadata } from "next";
 import { Position, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { getData } from './data';
+import '../../styles/globals.css';
 
 export const metadata: Metadata = {
-  title: "Wallets | DeFiGuard",
-  description: "Monitor wallet positions in the lending protocol",
+  title: "Assets | DeFiGuard",
+  description: "Monitor asset health in the lending protocol",
 };
 
 export default async function AssetsPage() {
