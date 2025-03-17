@@ -1,4 +1,4 @@
-import MetricBox from "../components/MetricBox/MetricBox";
+import MetricBox from "./components/MetricBox/MetricBox";
 import '../../styles/globals.css';
 
 
