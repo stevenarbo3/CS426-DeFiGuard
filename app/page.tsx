@@ -1,4 +1,5 @@
-import MetricBox from "../components/MetricBox/MetricBox";
+import MetricBox from "../components/MetricBox";
+import { TVLChart } from "@/components/tvl-chart";
 
 const mock_data = [
   {
@@ -65,11 +66,12 @@ export default function Home() {
 
 
   return (
-      <main className="flex flex-col p-5 gap-30">
+      <main className="flex flex-col gap-10 p-5 mx-auto max-w-7xl w-full">
           <h1 className="text-5xl font-bold text-gray-900">Overview</h1>
           <div className=" grid grid-cols-4 gap-5">
             {metricBoxElements}
           </div>
+          <TVLChart />
       </main>
   );
 }
