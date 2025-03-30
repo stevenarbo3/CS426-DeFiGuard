@@ -1,55 +1,71 @@
-import MetricBox from "../components/MetricBox";
 import { StockChart } from "@/components/StockChart";
+import StatBox from "@/components/StatBox";
+import React from 'react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { ChevronRight } from "lucide-react";
+import { InfoIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 const mock_data = [
   {
-    metric: "Total Supply",
-    amount: "$26B",
-    change: "⬆️",
-    change_amount: "172M"
+    title: "Total Supply",
+    value: 26000000000,
+    delta: 1.62,
   },
   {
-    metric: "Total Borrow",
-    amount: "$10B",
-    change: "⬆️",
-    change_amount: "110M"
+    title: "Total Borrow",
+    value: 10000000000,
+    delta: 5.3,
   },
   {
-    metric: "Total Value Locked",
-    amount: "$16B",
-    change: "⬆️",
-    change_amount: "62M"
+    title: "Total Value Locked",
+    value: 16000000000,
+    delta: 2.4,
   },
   {
-    metric: "Value Eligible for Liquidations",
-    amount: "$21K",
-    change: "⬇️",
-    change_amount: "2K"
+    title: "Value Eligible for Liquidations",
+    value: 21000,
+    delta: -4.2,
+    description: "Total value at risk of liquidation in positions with health score below 1"
   },
   {
-    metric: "Total Collateral at Risk",
-    amount: "$445M",
-    change: "⬆️",
-    change_amount: "65M"
+    title: "Total Collateral at Risk",
+    value: 445000000,
+    delta: 0.2,
+    description: "Total value at risk of liquidation in positions with health score approaching liquidation"
   },
   {
-    metric: "Wallets at Risk",
-    amount: "$20k",
-    change: "⬆️",
-    change_amount: "1K"
+    title: "Wallets at Risk",
+    value: 20000,
+    delta: 0.7,
+    description: "Wallets holding positions with health score approaching liquidation"
+
   },
   {
-    metric: "Wallets Eligible for Liquidations",
-    amount: "4K",
-    change: "⬆️",
-    change_amount: "47"
+    title: "Wallets Eligible for Liquidations",
+    value: 4000,
+    delta: 0.3,
+    description: "Wallets holding positions with health score below 1"
   },
   {
-    metric: "Bad Debt",
-    amount: "$362K",
-    change: "⬇️",
-    change_amount: "311"
-  },
+    title: "Bad Debt",
+    value: 362000,
+    delta: -1.5,
+    description: "Protocol bad debt, calculated as the sum of (borrow - collateral) over all wallets where health <1."
+  }
 ]
 
 const chartData = [
@@ -70,26 +86,75 @@ const chartData = [
 
 export default function Home() {
 
-  const metricBoxElements = mock_data.map(data => {
+  const statBoxElements = mock_data.map((data,index) => {
     return (
-        <MetricBox
-            key={data.metric}
-            {...data}
-        />
+      <React.Fragment key={data.title}>
+        {index < 3 ?
+          <Sheet>
+              <SheetTrigger asChild className="cursor-pointer">
+                <div className="flex gap-3">
+                  <StatBox
+                        key={data.title}
+                        {...data}
+                        value={`$${formatNumber(data.value)}`}
+                    />
+                    <ChevronRight className="h-5 w-5" />
+                </div>
+              </SheetTrigger>
+                <SheetContent className="bg-[#0a0e17] text-white">
+                  <SheetHeader>
+                    <SheetTitle className="text-white">{data.title}</SheetTitle>
+                    <SheetDescription>
+                      Interactive graph goes here
+                    </SheetDescription>
+                  </SheetHeader>
+              </SheetContent>
+            </Sheet>
+            :
+            <div className="flex gap-5">
+              <StatBox
+                  {...data}
+                  value={`$${formatNumber(data.value)}`}
+              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex flex-start mt-1"><InfoIcon className="h-4 w-4"/></TooltipTrigger>
+                  <TooltipContent>
+                    <span className="text-base">{data.description}</span>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+        }
+      </React.Fragment>
     )
   })
 
   return (
-      <main className="flex flex-col gap-10 p-5 mx-auto max-w-7xl w-full">
-          <h1 className="text-5xl font-bold text-gray-900">Overview</h1>
-          <div className=" grid grid-cols-4 gap-5">
-            {metricBoxElements}
-          </div>
-          <StockChart 
-          title="Total Value Locked"
-          data={chartData}
-          tooltipLabel="TVL"
-          color="#0ea5e9"/>
-      </main>
+      <div className="min-h-screen bg-[#0a0e17]">
+        <main className="flex flex-col gap-10 text-white p-5 mx-auto max-w-7xl w-full ">
+            <h1 className="text-5xl font-bold">Overview</h1>
+            <div className=" grid grid-cols-4 gap-5">
+              {statBoxElements}
+            </div>
+            <StockChart 
+            title="Total Value Locked"
+            data={chartData}
+            tooltipLabel="TVL"
+            color="white"/>
+        </main>
+      </div>
   );
+}
+
+function formatNumber(value: number): string {
+  if (value >= 1e9) {
+      return `${(value / 1e9).toFixed(2)}B`;
+  } else if (value >= 1e6) {
+      return `${(value / 1e6).toFixed(2)}M`;
+  } else if (value >= 1e3) {
+      return `${(value / 1e3).toFixed(2)}K`;
+  } else {
+      return value.toString();
+  }
 }

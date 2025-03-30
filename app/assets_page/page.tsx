@@ -11,12 +11,14 @@ export const metadata: Metadata = {
 export default async function AssetsPage() {
     const data = await getData();
     return (
-      <main className="flex flex-col gap-10 p-5 mx-auto max-w-7xl w-full">
-        <h1 className="text-5xl font-bold text-gray-900">Assets</h1>
-        <div className="container mx-auto py-10">
-          <DataTable columns={columns} data={data} />
-        </div>
-      </main>
+      <div className="min-h-screen bg-[#0a0e17]">
+        <main className="flex flex-col text-white p-5 mx-auto max-w-7xl w-full">
+          <h1 className="text-5xl font-bold ">Assets</h1>
+          <div className="container mx-auto py-10">
+            <DataTable columns={columns} data={data} />
+          </div>
+        </main>
+      </div>
         
     );
 }
