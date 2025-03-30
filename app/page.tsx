@@ -1,55 +1,56 @@
-import MetricBox from "../components/MetricBox";
 import { StockChart } from "@/components/StockChart";
+import StatBox from "@/components/StatBox";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 const mock_data = [
   {
-    metric: "Total Supply",
-    amount: "$26B",
-    change: "⬆️",
-    change_amount: "172M"
+    title: "Total Supply",
+    value: 26000000000,
+    delta: 1.62,
   },
   {
-    metric: "Total Borrow",
-    amount: "$10B",
-    change: "⬆️",
-    change_amount: "110M"
+    title: "Total Borrow",
+    value: 10000000000,
+    delta: 5.3,
   },
   {
-    metric: "Total Value Locked",
-    amount: "$16B",
-    change: "⬆️",
-    change_amount: "62M"
+    title: "Total Value Locked",
+    value: 16000000000,
+    delta: 2.4,
   },
   {
-    metric: "Value Eligible for Liquidations",
-    amount: "$21K",
-    change: "⬇️",
-    change_amount: "2K"
+    title: "Value Eligible for Liquidations",
+    value: 21000,
+    delta: -4.2,
   },
   {
-    metric: "Total Collateral at Risk",
-    amount: "$445M",
-    change: "⬆️",
-    change_amount: "65M"
+    title: "Total Collateral at Risk",
+    value: 445000000,
+    delta: 0.2,
   },
   {
-    metric: "Wallets at Risk",
-    amount: "$20k",
-    change: "⬆️",
-    change_amount: "1K"
+    title: "Wallets at Risk",
+    value: 20000,
+    delta: 0.7,
+
   },
   {
-    metric: "Wallets Eligible for Liquidations",
-    amount: "4K",
-    change: "⬆️",
-    change_amount: "47"
+    title: "Wallets Eligible for Liquidations",
+    value: 4000,
+    delta: 0.3,
   },
   {
-    metric: "Bad Debt",
-    amount: "$362K",
-    change: "⬇️",
-    change_amount: "311"
-  },
+    title: "Bad Debt",
+    value: 362000,
+    delta: -1.5,
+  }
 ]
 
 const chartData = [
@@ -70,26 +71,53 @@ const chartData = [
 
 export default function Home() {
 
-  const metricBoxElements = mock_data.map(data => {
+  const statBoxElements = mock_data.map(data => {
     return (
-        <MetricBox
-            key={data.metric}
-            {...data}
-        />
+          <Sheet key={data.title}>
+              <SheetTrigger asChild className="cursor-pointer">
+              <StatBox
+                    key={data.title}
+                    {...data}
+                    value={`$${formatNumber(data.value)}`}
+                />
+              </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle></SheetTitle>
+                    <SheetDescription>
+                      Interactive Graph goes here
+                    </SheetDescription>
+                  </SheetHeader>
+              </SheetContent>
+            </Sheet>
     )
   })
 
   return (
-      <main className="flex flex-col gap-10 p-5 mx-auto max-w-7xl w-full">
-          <h1 className="text-5xl font-bold text-gray-900">Overview</h1>
-          <div className=" grid grid-cols-4 gap-5">
-            {metricBoxElements}
-          </div>
-          <StockChart 
-          title="Total Value Locked"
-          data={chartData}
-          tooltipLabel="TVL"
-          color="#0ea5e9"/>
-      </main>
+      <div className="min-h-screen bg-[#0a0e17]">
+        <main className="flex flex-col gap-10 text-white p-5 mx-auto max-w-7xl w-full ">
+            <h1 className="text-5xl font-bold">Overview</h1>
+            <div className=" grid grid-cols-4 gap-5">
+              {statBoxElements}
+            </div>
+            <StockChart 
+            title="Total Value Locked"
+            data={chartData}
+            tooltipLabel="TVL"
+            color="white"/>
+        </main>
+      </div>
   );
+}
+
+function formatNumber(value: number): string {
+  if (value >= 1e9) {
+      return `${(value / 1e9).toFixed(2)}B`;
+  } else if (value >= 1e6) {
+      return `${(value / 1e6).toFixed(2)}M`;
+  } else if (value >= 1e3) {
+      return `${(value / 1e3).toFixed(2)}K`;
+  } else {
+      return value.toString();
+  }
 }

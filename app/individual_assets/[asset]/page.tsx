@@ -3,6 +3,7 @@ import { getData } from "@/app/assets_page/data";
 import { StockChart } from "@/components/StockChart";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import StatBox from "@/components/StatBox";
 
 type AssetPageProps = {
   params: { asset: string };
@@ -88,31 +89,6 @@ export default async function AssetPage({ params }: AssetPageProps) {
             color="#0ea5e9"
         />
         </main>
-    </div>
-  );
-}
-
-
-// Creation of a statbox component to display the stats, can lift higher up later
-function StatBox({
-  title,
-  value,
-  delta,
-  positive,
-}: {
-  title: string;
-  value: string;
-  delta: number;
-  positive?: boolean;
-}) {
-  const isPositive = delta >= 0;
-  const color = isPositive ? "text-green-400" : "text-red-500";
-  const arrow = isPositive ? "▲" : "▼";
-  return (
-    <div>
-      <p className="text-sm text-gray-400">{title.toUpperCase()}</p>
-      <p className="text-2xl font-bold">{value}</p>
-      <p className={`text-sm ${color}`}>{arrow} {Math.abs(delta).toFixed(2)}%</p>
     </div>
   );
 }
