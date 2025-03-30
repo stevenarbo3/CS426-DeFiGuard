@@ -156,8 +156,12 @@ async function getData(): Promise<Position[]> {
 export default async function WalletsPage() {
   const data = await getData();
   return (
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
-    </div>
+    <main className="flex flex-col gap-10 p-5 mx-auto max-w-7xl w-full">
+      <h1 className="text-5xl font-bold text-gray-900">Wallets</h1>
+      <div className="container mx-auto py-10">
+        <DataTable columns={columns} data={data} />
+      </div>
+    </main>
+    
   );
 }
