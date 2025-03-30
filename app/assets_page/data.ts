@@ -1,6 +1,5 @@
 import { Position } from './columns'; 
 
-
 // Function to export the data for our table
 export async function getData(): Promise<Position[]> {
     // Mock data
@@ -11,7 +10,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 4940000000,
             totalBorrow: 4100000000,
             collateralAtRisk: 88510000,
-            walletsAtRisk: 13760
+            walletsAtRisk: 13760,
+            totalSupply: 5060000000,
+            supplyChangePercent: -1.62,
+            borrowChangePercent: -1.62,
+            utilizationRate: 86.44,
+            utilizationChangePercent: 0.2409,
+            collateralRiskChangePercent: 1.89
         },
         {
             assetType: 'BTC',
@@ -19,7 +24,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 3910000000,
             totalBorrow: 3030000000,
             collateralAtRisk: 73790000,
-            walletsAtRisk: 4890
+            walletsAtRisk: 4890,
+            totalSupply: 4700000000,
+            supplyChangePercent: -0.91,
+            borrowChangePercent: -0.8,
+            utilizationRate: 80.12,
+            utilizationChangePercent: 0.12,
+            collateralRiskChangePercent: 1.22
         },
         {
             assetType: 'stETH',
@@ -27,7 +38,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 3740000000,
             totalBorrow: 3030000000,
             collateralAtRisk: 28080000,
-            walletsAtRisk: 2660
+            walletsAtRisk: 2660,
+            totalSupply: 4200000000,
+            supplyChangePercent: -1.1,
+            borrowChangePercent: -0.9,
+            utilizationRate: 82.36,
+            utilizationChangePercent: 0.18,
+            collateralRiskChangePercent: 0.9
         },
         {
             assetType: 'USDC',
@@ -35,7 +52,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 3660000000,
             totalBorrow: 2840000000,
             collateralAtRisk: 20410000,
-            walletsAtRisk: 16120
+            walletsAtRisk: 16120,
+            totalSupply: 3900000000,
+            supplyChangePercent: -0.75,
+            borrowChangePercent: -0.6,
+            utilizationRate: 72.82,
+            utilizationChangePercent: 0.11,
+            collateralRiskChangePercent: 1.11
         },
         {
             assetType: 'USDT',
@@ -43,7 +66,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 3450000000,
             totalBorrow: 2690000000,
             collateralAtRisk: 10890000,
-            walletsAtRisk: 4300
+            walletsAtRisk: 4300,
+            totalSupply: 3700000000,
+            supplyChangePercent: -0.5,
+            borrowChangePercent: -0.7,
+            utilizationRate: 72.7,
+            utilizationChangePercent: 0.13,
+            collateralRiskChangePercent: 0.8
         },
         {
             assetType: 'weETH',
@@ -51,7 +80,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 2990000000,
             totalBorrow: 2380000000,
             collateralAtRisk: 70120000,
-            walletsAtRisk: 1330
+            walletsAtRisk: 1330,
+            totalSupply: 3200000000,
+            supplyChangePercent: -0.9,
+            borrowChangePercent: -0.5,
+            utilizationRate: 78.32,
+            utilizationChangePercent: 0.16,
+            collateralRiskChangePercent: 1.22
         },
         {
             assetType: 'cbBTC',
@@ -59,7 +94,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 941350000,
             totalBorrow: 734250000,
             collateralAtRisk: 32620000,
-            walletsAtRisk: 725
+            walletsAtRisk: 725,
+            totalSupply: 1000000000,
+            supplyChangePercent: -0.66,
+            borrowChangePercent: -0.8,
+            utilizationRate: 73.42,
+            utilizationChangePercent: 0.1,
+            collateralRiskChangePercent: 1.3
         },
         {
             assetType: 'rsETH',
@@ -67,7 +108,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 782660000,
             totalBorrow: 550540000,
             collateralAtRisk: 3280000,
-            walletsAtRisk: 171
+            walletsAtRisk: 171,
+            totalSupply: 880000000,
+            supplyChangePercent: -0.7,
+            borrowChangePercent: -0.9,
+            utilizationRate: 62.5,
+            utilizationChangePercent: 0.14,
+            collateralRiskChangePercent: 0.92
         },
         {
             assetType: 'USDS',
@@ -75,7 +122,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 544800000,
             totalBorrow: 307330000,
             collateralAtRisk: 67300000,
-            walletsAtRisk: 206
+            walletsAtRisk: 206,
+            totalSupply: 600000000,
+            supplyChangePercent: -0.3,
+            borrowChangePercent: -0.5,
+            utilizationRate: 51.22,
+            utilizationChangePercent: 0.09,
+            collateralRiskChangePercent: 1.1
         },
         {
             assetType: 'ezETH',
@@ -83,7 +136,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 343090000,
             totalBorrow: 2630000,
             collateralAtRisk: 874780,
-            walletsAtRisk: 553
+            walletsAtRisk: 553,
+            totalSupply: 400000000,
+            supplyChangePercent: -0.2,
+            borrowChangePercent: -0.3,
+            utilizationRate: 36.21,
+            utilizationChangePercent: 0.05,
+            collateralRiskChangePercent: 0.4
         },
         {
             assetType: 'sUSDe',
@@ -91,7 +150,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 334340000,
             totalBorrow: 215390000,
             collateralAtRisk: 6510000,
-            walletsAtRisk: 200
+            walletsAtRisk: 200,
+            totalSupply: 360000000,
+            supplyChangePercent: -0.4,
+            borrowChangePercent: -0.6,
+            utilizationRate: 59.83,
+            utilizationChangePercent: 0.07,
+            collateralRiskChangePercent: 0.6
         },
         {
             assetType: 'osETH',
@@ -99,7 +164,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 262300000,
             totalBorrow: 196720000,
             collateralAtRisk: 181970,
-            walletsAtRisk: 171
+            walletsAtRisk: 171,
+            totalSupply: 280000000,
+            supplyChangePercent: -0.3,
+            borrowChangePercent: -0.4,
+            utilizationRate: 70.26,
+            utilizationChangePercent: 0.08,
+            collateralRiskChangePercent: 0.55
         },
         {
             assetType: 'LINK',
@@ -107,7 +178,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 223530000,
             totalBorrow: 159700000,
             collateralAtRisk: 4080000,
-            walletsAtRisk: 1760
+            walletsAtRisk: 1760,
+            totalSupply: 250000000,
+            supplyChangePercent: -0.6,
+            borrowChangePercent: -0.5,
+            utilizationRate: 63.45,
+            utilizationChangePercent: 0.1,
+            collateralRiskChangePercent: 0.7
         },
         {
             assetType: 'AAVE',
@@ -115,7 +192,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 205340000,
             totalBorrow: 155210000,
             collateralAtRisk: 5860000,
-            walletsAtRisk: 1750
+            walletsAtRisk: 1750,
+            totalSupply: 230000000,
+            supplyChangePercent: -0.5,
+            borrowChangePercent: -0.6,
+            utilizationRate: 67.48,
+            utilizationChangePercent: 0.12,
+            collateralRiskChangePercent: 0.8
         },
         {
             assetType: 'DAI',
@@ -123,7 +206,13 @@ export async function getData(): Promise<Position[]> {
             collateralAmount: 192250000,
             totalBorrow: 143160000,
             collateralAtRisk: 391890,
-            walletsAtRisk: 4140
+            walletsAtRisk: 4140,
+            totalSupply: 220000000,
+            supplyChangePercent: -0.2,
+            borrowChangePercent: -0.4,
+            utilizationRate: 65.08,
+            utilizationChangePercent: 0.06,
+            collateralRiskChangePercent: 0.51
         }
-    ];    
+    ];
 }

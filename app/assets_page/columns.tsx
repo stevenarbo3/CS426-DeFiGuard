@@ -5,13 +5,19 @@ import Link from "next/link";
 
 // This type is used to define the shape of our data.
 export type Position = {
-  assetType: string;
-  price: number;
-  collateralAmount: number;
-  totalBorrow: number;
-  collateralAtRisk: number;
-  walletsAtRisk: number;
-};
+    assetType: string;
+    price: number;
+    collateralAmount: number;
+    totalBorrow: number;
+    collateralAtRisk: number;
+    walletsAtRisk: number;
+    totalSupply: number;
+    supplyChangePercent: number;
+    borrowChangePercent: number;
+    utilizationRate: number;
+    utilizationChangePercent: number;
+    collateralRiskChangePercent: number;
+  };  
 
 // Function to format numbers into K, M, B
 function formatNumber(value: number): string {

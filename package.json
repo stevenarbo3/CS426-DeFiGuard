@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"next dev --turbopack\" \"npm run open\"",
+    "open": "sleep 2 && open http://localhost:3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -29,8 +30,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.2",
     "eslint": "^9",
     "eslint-config-next": "15.2.2-canary.6",
+    "open": "^10.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
