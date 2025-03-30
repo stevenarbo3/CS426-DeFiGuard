@@ -11,7 +11,7 @@ export default function Header() {
             </span>
             {/* Placeholder Image */}
             <Image 
-            src="/assets/temp-logo.png" 
+            src="/assets/temp-logo.png"
             alt="carbon logo"
             width={40}
             height={40}
@@ -19,7 +19,7 @@ export default function Header() {
             />
             <nav className="flex list-none">
                 <li><Link className={navButton} href="/">Overview</Link></li>
-                <li><Link className={navButton} href="/assets">Assets</Link></li>
+                <li><Link className={navButton} href="/assets_page">Assets</Link></li>
                 <li><Link className={navButton} href="/wallets">Wallets</Link></li>
             </nav>
         </header>

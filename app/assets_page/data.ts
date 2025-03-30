@@ -1,6 +1,9 @@
-import { Position } from './columns';  // Adjusted the import path to the correct location
+import { Position } from './columns'; 
 
+
+// Function to export the data for our table
 export async function getData(): Promise<Position[]> {
+    // Mock data
     return [
         {
             assetType: 'ETH',

@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 export type Position = {
@@ -12,6 +13,7 @@ export type Position = {
   walletsAtRisk: number;
 };
 
+// Function to format numbers into K, M, B
 function formatNumber(value: number): string {
     if (value >= 1e9) {
         return `${(value / 1e9).toFixed(2)}B`;
@@ -24,13 +26,21 @@ function formatNumber(value: number): string {
     }
 }
 
-
+// Function to define the columns for the table
 export const columns: ColumnDef<Position>[] = [
     {
         accessorKey: "assetType",
         header: "Asset",
         enableSorting: true,
-    },
+        cell: ({ row }) => {
+          const asset = row.getValue("assetType") as string;
+          return (
+            <Link href={`/individual_assets/${asset.toLowerCase()}`} className="text-blue-500 hover:underline">
+              {asset}
+            </Link>
+          );
+        },
+      },
     {
         accessorKey: "price",
         header: "Price",
