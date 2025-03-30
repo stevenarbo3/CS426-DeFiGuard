@@ -1,5 +1,6 @@
 import { StockChart } from "@/components/StockChart";
 import StatBox from "@/components/StatBox";
+import React from 'react';
 import {
   Sheet,
   SheetContent,
@@ -8,6 +9,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { ChevronRight } from "lucide-react";
+import { InfoIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 const mock_data = [
   {
@@ -29,27 +39,32 @@ const mock_data = [
     title: "Value Eligible for Liquidations",
     value: 21000,
     delta: -4.2,
+    description: "Total value at risk of liquidation in positions with health score below 1"
   },
   {
     title: "Total Collateral at Risk",
     value: 445000000,
     delta: 0.2,
+    description: "Total value at risk of liquidation in positions with health score approaching liquidation"
   },
   {
     title: "Wallets at Risk",
     value: 20000,
     delta: 0.7,
+    description: "Wallets holding positions with health score approaching liquidation"
 
   },
   {
     title: "Wallets Eligible for Liquidations",
     value: 4000,
     delta: 0.3,
+    description: "Wallets holding positions with health score below 1"
   },
   {
     title: "Bad Debt",
     value: 362000,
     delta: -1.5,
+    description: "Protocol bad debt, calculated as the sum of (borrow - collateral) over all wallets where health <1."
   }
 ]
 
@@ -71,25 +86,47 @@ const chartData = [
 
 export default function Home() {
 
-  const statBoxElements = mock_data.map(data => {
+  const statBoxElements = mock_data.map((data,index) => {
     return (
-          <Sheet key={data.title}>
+      <React.Fragment key={data.title}>
+        {index < 3 ?
+          <Sheet>
               <SheetTrigger asChild className="cursor-pointer">
-              <StatBox
-                    key={data.title}
-                    {...data}
-                    value={`$${formatNumber(data.value)}`}
-                />
+                <div className="flex gap-3">
+                  <StatBox
+                        key={data.title}
+                        {...data}
+                        value={`$${formatNumber(data.value)}`}
+                    />
+                    <ChevronRight className="h-5 w-5" />
+                </div>
               </SheetTrigger>
-                <SheetContent>
+                <SheetContent className="bg-[#0a0e17] text-white">
                   <SheetHeader>
-                    <SheetTitle></SheetTitle>
+                    <SheetTitle className="text-white">{data.title}</SheetTitle>
                     <SheetDescription>
-                      Interactive Graph goes here
+                      Interactive graph goes here
                     </SheetDescription>
                   </SheetHeader>
               </SheetContent>
             </Sheet>
+            :
+            <div className="flex gap-5">
+              <StatBox
+                  {...data}
+                  value={`$${formatNumber(data.value)}`}
+              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex flex-start mt-1"><InfoIcon className="h-4 w-4"/></TooltipTrigger>
+                  <TooltipContent>
+                    <span className="text-base">{data.description}</span>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+        }
+      </React.Fragment>
     )
   })
 
