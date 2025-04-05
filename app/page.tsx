@@ -111,7 +111,8 @@ export default function Home() {
               </SheetContent>
             </Sheet>
             :
-            <div className="flex gap-5">
+            <div className="flex gap-2 flex-wrap items-start">
+
               <StatBox
                   {...data}
                   value={`$${formatNumber(data.value)}`}
@@ -134,14 +135,19 @@ export default function Home() {
       <div className="min-h-screen bg-[#0a0e17]">
         <main className="flex flex-col gap-10 text-white p-5 mx-auto max-w-7xl w-full ">
             <h1 className="text-5xl font-bold">Overview</h1>
-            <div className=" grid grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+
               {statBoxElements}
             </div>
-            <StockChart 
-            title="Total Value Locked"
-            data={chartData}
-            tooltipLabel="TVL"
-            color="white"/>
+            <div className="w-full overflow-x-auto">
+              <StockChart 
+                title="Total Value Locked"
+                data={chartData}
+                tooltipLabel="TVL"
+                color="white"
+              />
+            </div>
+
         </main>
       </div>
   );
