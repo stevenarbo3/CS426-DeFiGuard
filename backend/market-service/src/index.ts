@@ -39,13 +39,14 @@ app.get('/markets', async (req, res) => {
     })
 
     res.json({ status: 'sent', response: response.data })
+
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to fetch or forward market data' })
   }
 });
 
-const PORT = 3000;
+const PORT = 4001;
 app.listen(PORT, (err: Error) => {
   if (err) {
     console.error('Failed to start server:', err);
