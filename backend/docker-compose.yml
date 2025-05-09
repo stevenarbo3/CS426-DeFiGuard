@@ -1,0 +1,56 @@
+# This is a docker compose file for defining and running
+# multi-container environments. It simplifies the control
+# of your application stack into a single configuration
+# file. The following commands are useful:
+#
+#   docker compose up          - "runs" the entire system
+#   docker compose up --build  - force a build and "runs" system
+#   docker compose up -d       - "runs" system in detacted mode
+#   docker compose down        - "closes" the entire system and deletes everything
+#   docker compose stop        - stop running containers without removing them
+#   docker compose start       - start previously stopped containers
+#
+version: '3.9'
+name: cs426-project
+
+services:
+  registry:
+    build:
+      context: ./registry
+    container_name: registry
+    networks:
+      - skynet
+
+  market-service:
+    build:
+      context: ./market-service
+    container_name: market-service
+    depends_on:
+      - registry
+    networks:
+      - skynet
+
+  calculation-service:
+    build:
+      context: ./calculation-service
+    container_name: calculation-service
+    depends_on:
+      - registry
+    networks:
+      - skynet
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - market-service
+    networks:
+      - skynet
+    ports:
+      - "3000:3000"
+
+networks:
+  skynet:
+    driver: bridge
+

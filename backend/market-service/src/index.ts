@@ -1,56 +1,93 @@
-import express from 'express';
+import express from "express";
+import { pino } from "pino";
+import { Request, Response } from "express";
 import { createMoonwellClient } from "@moonwell-fi/moonwell-sdk";
-import axios from 'axios'
+
+const PORT = 3000;
+const REGISTRY_URL = "http://registry:3000";
+
+const log = pino({ transport: { target: "pino-pretty" } });
 
 const app = express();
-
 app.use(express.json());
 
-async function fetchMarketData() {
-  const moonwellClient = createMoonwellClient({
-      networks: {
-      base: {
-    rpcUrls: ["https://base.llamarpc.com"],
+const moonwellClient = createMoonwellClient({
+  networks: {
+    base: {
+      rpcUrls: ["https://base.llamarpc.com"],
+    },
   },
-  moonbeam: {
-    rpcUrls: ["https://moonbeam.public.blastapi.io"],
-  },
-},
 });
 
-  const markets = await moonwellClient.getMarkets();
-
-  const marketData = markets.map((market) => ({
-  name: market.underlyingToken.name,
-  symbol: market.underlyingToken.symbol,
-  }));
-
-  return marketData;
+// convert BigInt to string
+function serializeBigInt(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === "bigint") return obj.toString();
+  if (Array.isArray(obj)) return obj.map(serializeBigInt);
+  if (typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [key, serializeBigInt(value)])
+    );
+  }
+  return obj;
 }
 
-// endpoint to fetch market data
-app.get('/markets', async (req, res) => {
-  
+async function registerWithRetry(name: string, url: string, maxRetries = 5) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(`${REGISTRY_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, url }),
+      });
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      log.info("Registered with registry");
+      return;
+    } catch (err) {
+      log.warn(
+        `Failed to register (attempt ${i + 1}): ${(err as Error).message}`
+      );
+      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+  log.error("Could not register with registry. Exiting.");
+  process.exit(1);
+}
+
+async function lookupService(name: string): Promise<string | null> {
   try {
-    const marketData = await fetchMarketData()
-
-    const response = await axios.post(`http://calculation-service:${PORT}/market-data`, {
-      data: marketData,
-    })
-
-    res.json({ status: 'sent', response: response.data })
-
+    const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const { url } = await res.json();
+    return url;
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch or forward market data' })
+    log.error(`Lookup failed for ${name}: ${(err as Error).message}`);
+    return null;
+  }
+}
+
+app.post("/", async (_req: Request, res: Response) => {
+  try {
+    const marketData = await moonwellClient.getMarkets({
+      chainId: 8453, // Base chain id
+    });
+
+    log.info("Fetched market data");
+
+    const response = {
+      from: "market-service",
+      data: serializeBigInt(marketData),
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json(response);
+  } catch (err) {
+    log.error(`Failed to fetch market data: ${(err as Error).message}`);
+    res.status(500).send("Error fetching market data");
   }
 });
 
-const PORT = 4001;
-app.listen(PORT, (err: Error) => {
-  if (err) {
-    console.error('Failed to start server:', err);
-  } else {
-    console.log(`Server is listening on port ${PORT}`);
-  }
+app.listen(PORT, () => {
+  log.info(`market-service listening on port ${PORT}`);
+  registerWithRetry("market-service", `http://market-service:${PORT}`);
 });
