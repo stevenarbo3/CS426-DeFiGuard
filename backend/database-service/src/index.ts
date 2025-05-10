@@ -1,75 +1,98 @@
-import express, { Request, Response } from "express";
-import { pino } from "pino";
+import express from "express";
+import type { Request, Response } from "express";
 import { Pool } from "pg";
 import dotenv from "dotenv";
+import dns from "dns/promises";
+import { pino } from "pino";
 
 dotenv.config();
 
 const app = express();
-app.use(express.json());
-
-const PORT = 3000;
+const PORT = 3001;
 const REGISTRY_URL = "http://registry:3000";
-
 const log = pino({ transport: { target: "pino-pretty" } });
 
-const db = new Pool({
-  connectionString: process.env.DATABASE_URL,
+app.use(express.json());
+
+let db: Pool;
+
+// Resolve PGHOST to an IPv4 address before connecting
+dns.lookup(process.env.PGHOST!, { family: 4 }).then(({ address }) => {
+  db = new Pool({
+    host: address,
+    port: Number(process.env.PGPORT),
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    ssl: { rejectUnauthorized: false },
+  });
+
+  // Start listening after DB is ready
+  app.listen(PORT, () => {
+    log.info(`database-service listening on port ${PORT}`);
+    registerWithRetry("database-service", `http://database-service:${PORT}`);
+    scheduleFetch();
+  });
+}).catch((err) => {
+  log.error(`Failed to resolve DB host: ${err.message}`);
+  process.exit(1);
 });
 
-async function registerWithRetry(name: string, url: string, maxRetries = 5) {
-  for (let i = 0; i < maxRetries; i++) {
+// Register this service with the registry (with retry)
+async function registerWithRetry(name: string, url: string, retries = 5) {
+  for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(`${REGISTRY_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, url }),
       });
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      log.info("Registered with registry");
-      return;
+      if (res.ok) {
+        log.info("Registered with registry");
+        return;
+      }
     } catch (err) {
-      log.warn(`Failed to register (attempt ${i + 1}): ${(err as Error).message}`);
+      log.warn(`Retry ${i + 1} failed: ${(err as Error).message}`);
       await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
     }
   }
-  log.error("Could not register with registry. Exiting.");
-  process.exit(1);
+  log.error("Failed to register after retries");
 }
 
+// Lookup another service by name
 async function lookupService(name: string): Promise<string | null> {
-    try {
-      const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      const { url } = await res.json();
-      return url;
-    } catch (err) {
-      log.error(`Lookup failed for ${name}: ${(err as Error).message}`);
-      return null;
-    }
-  }
-
-app.post("/", async (req: Request, res: Response) => {
-  const body = req.body;
   try {
-    log.info("Received data to store in DB");
-    const { totals, markets } = body.data;
+    const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const { url } = await res.json();
+    return url;
+  } catch (err) {
+    log.error(`Lookup failed: ${(err as Error).message}`);
+    return null;
+  }
+}
 
-    await db.query("BEGIN");
+// POST route for receiving data from the calculation service
+app.post("/", (req: Request, res: Response): void => {
+  (async () => {
+    try {
+      const { totals, markets } = req.body.data;
 
-    await db.query(
-      `INSERT INTO market_totals (supply_usd, borrow_usd, tvl_usd, reserves_usd, bad_debt_usd, timestamp)
-       VALUES ($1, $2, $3, $4, $5, NOW())`,
-      [
-        totals.totalSupplyUsd,
-        totals.totalBorrowUsd,
-        totals.totalValueLockedUsd,
-        totals.totalReservesUsd,
-        totals.badDebtUsd,
-      ]
-    );
-
-    for (const market of markets) {
+      await db.query("BEGIN");
+        // Market total query upload
+      await db.query(
+        `INSERT INTO market_totals (supply_usd, borrow_usd, tvl_usd, reserves_usd, bad_debt_usd, timestamp)
+         VALUES ($1, $2, $3, $4, $5, NOW())`,
+        [
+          totals.totalSupplyUsd,
+          totals.totalBorrowUsd,
+          totals.totalValueLockedUsd,
+          totals.totalReservesUsd,
+          totals.badDebtUsd,
+        ]
+      );
+    //   Markets query upload
+      for (const market of markets) {
         await db.query(
           `INSERT INTO markets (
               market_key, chain_id, deprecated, collateral_factor, exchange_rate,
@@ -93,55 +116,49 @@ app.post("/", async (req: Request, res: Response) => {
             market.baseBorrowApy,
             market.baseSupplyApy,
             market.totalBorrowApr,
-            market.totalSupplyApr
+            market.totalSupplyApr,
           ]
         );
       }
 
-    await db.query("COMMIT");
-    res.status(201).send("Data stored in database");
-  } catch (err) {
-    await db.query("ROLLBACK");
-    log.error(`Error saving to DB: ${(err as Error).message}`);
-    res.status(500).send("Error saving to DB");
-  }
+      await db.query("COMMIT");
+      res.status(201).send("Data stored in database");
+    } catch (err) {
+      await db.query("ROLLBACK");
+      console.error("Error saving to DB", err);
+      res.status(500).send("Error saving to DB");
+    }
+  })();
 });
 
-app.listen(PORT, () => {
-    log.info(`database-service listening on port ${PORT}`);
-    registerWithRetry("database-service", `http://database-service:${PORT}`);
-  
-    // Schedule to run once per hour (3600_000 ms)
-    setInterval(async () => {
-      log.info("Scheduled job: calling calculation-service...");
-  
-      const calcUrl = await lookupService("calculation-service");
-      if (!calcUrl) {
-        log.error("Could not resolve calculation-service");
-        return;
-      }
-  
-      try {
-        const calcRes = await fetch(calcUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!calcRes.ok) throw new Error(`Status ${calcRes.status}`);
-  
-        const calcData = await calcRes.json();
-  
-        // Now send it to self (i.e., to the database-service POST endpoint)
-        const selfRes = await fetch(`http://localhost:${PORT}/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(calcData),
-        });
-  
-        if (!selfRes.ok) throw new Error(`DB save failed: ${selfRes.status}`);
-        log.info("Data successfully fetched and stored to DB");
-      } catch (err) {
-        log.error(`Scheduled fetch failed: ${(err as Error).message}`);
-      }
-    }, 3600_000); // every 1 hour (in ms)
-  });
-  
+// Background polling to call calculation-service and self-post
+function scheduleFetch() {
+  setInterval(async () => {
+    log.info("Scheduled job: calling calculation-service...");
+
+    const calcUrl = await lookupService("calculation-service");
+    if (!calcUrl) return;
+
+    try {
+      const calcRes = await fetch(calcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!calcRes.ok) throw new Error(`Status ${calcRes.status}`);
+      const calcData = await calcRes.json();
+
+      const selfRes = await fetch(`http://localhost:${PORT}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(calcData),
+      });
+
+      if (!selfRes.ok) throw new Error(`Self POST failed: ${selfRes.status}`);
+      log.info("Data successfully saved to DB");
+    } catch (err) {
+      log.error(`Scheduled fetch failed: ${(err as Error).message}`);
+    }
+  }, 3600_000); // Run hourly fetch
+}
+

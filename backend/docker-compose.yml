@@ -49,20 +49,49 @@ services:
       - skynet
     ports:
       - "3000:3000"
-
   database-service:
-    build:
-      context: ./database-service
-    container_name: database-service
-    depends_on:
-      - registry
-      - calculation-service
-    networks:
-      - skynet
-    ports:
-      - "3005:3005"
-    environment:
-      - DATABASE_URL=postgresql://postgres:QpcpWWxCTDTvv9tv@db.rwwjgkpunukjdcjhojkc.supabase.co:5432/postgres
+      build:
+        context: ./database-service
+      container_name: database-service
+      depends_on:
+        - registry
+        - calculation-service
+      networks:
+        - skynet
+      ports:
+        - "3001:3001"
+      environment:
+        - PGHOST=aws-0-us-east-2.pooler.supabase.com
+        - PGPORT=5432
+        - PGUSER=postgres.rwwjgkpunukjdcjhojkc  # this part includes your project ref
+        - PGPASSWORD=QpcpWWxCTDTvv9tv           # replace with your actual password
+        - PGDATABASE=postgres
+        - PGSSLMODE=require
+
+  # database-service:
+  #   build:
+  #     context: ./database-service
+  #   container_name: database-service
+  #   depends_on:
+  #     - registry
+  #     - calculation-service
+  #   networks:
+  #     - skynet
+  #   ports:
+  #     - "3001:3001"
+  #   dns:
+  #     - 8.8.8.8
+  #   environment:
+  #     - PGHOST=db.rwwjgkpunukjdcjhojkc.supabase.co
+  #     - PGPORT=5432
+  #     - PGUSER=postgres
+  #     - PGPASSWORD=QpcpWWxCTDTvv9tv
+  #     - PGDATABASE=postgres
+  #     - PGSSLMODE=require
+  #     - NODE_OPTIONS=--dns-result-order=ipv4first
+    
+
+
 
 networks:
   skynet:
