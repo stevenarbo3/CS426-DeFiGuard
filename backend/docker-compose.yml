@@ -50,6 +50,20 @@ services:
     ports:
       - "3000:3000"
 
+  database-service:
+    build:
+      context: ./database-service
+    container_name: database-service
+    depends_on:
+      - registry
+      - calculation-service
+    networks:
+      - skynet
+    ports:
+      - "3005:3005"
+    environment:
+      - DATABASE_URL=postgresql://postgres:QpcpWWxCTDTvv9tv@db.rwwjgkpunukjdcjhojkc.supabase.co:5432/postgres
+
 networks:
   skynet:
     driver: bridge
